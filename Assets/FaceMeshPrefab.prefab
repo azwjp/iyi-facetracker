@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 114614920402834964}
   - component: {fileID: 33337409576573420}
   - component: {fileID: 23210496587587374}
+  - component: {fileID: 838148581678973177}
   m_Layer: 0
   m_Name: FaceMeshPrefab
   m_TagString: Untagged
@@ -106,3 +107,15 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &838148581678973177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405894938185170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35dbb4010fa4a4fc59f8d03a4a80fe53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
