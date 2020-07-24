@@ -3,9 +3,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
-#if UNITY_IOS && !UNITY_EDITOR
 using UnityEngine.XR.ARKit;
-#endif
+using System.Linq;
+using System;
 
 namespace Azw.Iyi
 {
@@ -16,10 +16,13 @@ namespace Azw.Iyi
         ARFace face;
         Text text;
 
-        ARKitFaceSubsystem m_ARKitFaceSubsystem;
+        ARKitFaceSubsystem arKitFaceSubsystem;
+
+        UDPSender udp;
 
         void Awake()
         {
+            udp = new UDPSender(GeneralSettings.DistinationIP, GeneralSettings.DistinationPort);
             face = GetComponent<ARFace>();
         }
         void Start() {
@@ -31,7 +34,7 @@ namespace Azw.Iyi
             var faceManager = FindObjectOfType<ARFaceManager>();
             if (faceManager != null)
             {
-                m_ARKitFaceSubsystem = (ARKitFaceSubsystem)faceManager.subsystem;
+                arKitFaceSubsystem = (ARKitFaceSubsystem)faceManager.subsystem;
             }
             face.updated += OnUpdated;
         }
@@ -41,14 +44,22 @@ namespace Azw.Iyi
             face.updated -= OnUpdated;
         }
 
+        void OnDestroy()
+        {
+            udp.Close();
+        }
+
         void OnUpdated(ARFaceUpdatedEventArgs eventArgs)
         {
-            using (var blendShapes = m_ARKitFaceSubsystem.GetBlendShapeCoefficients(face.trackableId, Allocator.Temp))
+            using (var blendShapes = arKitFaceSubsystem.GetBlendShapeCoefficients(face.trackableId, Allocator.Temp))
             {
+                var list = blendShapes.Select(blendShapeCoefficient => (Enum.GetName(typeof(ARKitBlendShapeLocation), blendShapeCoefficient.blendShapeLocation), blendShapeCoefficient.coefficient)).ToList();
+                udp.Send(list);
+
                 var t = "";
-                foreach (var featureCoefficient in blendShapes)
+                foreach (var c in list)
                 {
-                    t += (featureCoefficient.blendShapeLocation.ToString() + featureCoefficient.coefficient.ToString()) + "\n";
+                    t += c.Item1 + c.Item2.ToString() + "\n";
                 }
                 text.text = t;
             }
