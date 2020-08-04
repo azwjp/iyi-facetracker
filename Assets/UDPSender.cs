@@ -12,11 +12,13 @@ namespace Azw.Iyi
     public class UDPSender
     {
         UdpClient client;
+        string host;
+        int port;
 
         public UDPSender(string host, int port)
         {
             client = new UdpClient();
-            client.Connect(host, port);
+            client.Connect(this.host = host, this.port = port);
         }
 
 /**
@@ -34,6 +36,7 @@ namespace Azw.Iyi
         4: float value
 */
         public void Send(Transform transform, ARFace face, List<(string, float)> data) {
+            
             var ms = new MemoryStream();
 
             ms.Write(BitConverter.GetBytes(System.DateTime.UtcNow.ToBinary()), 0, 8);
@@ -55,6 +58,12 @@ namespace Azw.Iyi
             }
 
             var b = ms.ToArray();
+
+            if (!client.Client.Connected) {
+                Close();
+                client = new UdpClient();
+                client.Connect(this.host = host, this.port = port);
+            }
             client.SendAsync(b, b.Length);
         }
 
