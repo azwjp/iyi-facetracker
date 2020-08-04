@@ -54,7 +54,7 @@ namespace Azw.Iyi
             using (var blendShapes = arKitFaceSubsystem.GetBlendShapeCoefficients(face.trackableId, Allocator.Temp))
             {
                 var list = blendShapes.Select(blendShapeCoefficient => (Enum.GetName(typeof(ARKitBlendShapeLocation), blendShapeCoefficient.blendShapeLocation), blendShapeCoefficient.coefficient)).ToList();
-                udp.Send(list);
+                udp.Send(transform, eventArgs.face, list);
 
                 var t = "";
                 foreach (var c in list)
